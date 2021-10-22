@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+
+spring:
+  cloud:
+    stream:
+      function:
+        definition: messageProducer;messageProcessor;messageConsumer
+      default-binder: kafka
+      bindings:
+        messageProducer-out-0:
+          destination: "cmd.message_process"
+          binder: kafka
+        messageProcessor-in-0:
+          destination: "cmd.message_process"
+          binder: kafka
+        messageProcessor-out-0:
+          destination: "cmd.message"
+          binder: kafka
+        messageConsumer-in-0:
+          destination: "cmd.message"
+          binder: kafka
+      kafka:
+        binder:
+          brokers: localhost:9092
+          auto-create-topics: true
