@@ -1,0 +1,39 @@
+services:
+  redpanda:
+    image: docker.redpanda.com/vectorized/redpanda:latest
+    container_name: redpanda
+    network_mode: bridge
+    command:
+      - redpanda start
+      - --smp 1
+      - --overprovisioned
+      - --node-id 0
+      - --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - --advertise-kafka-addr PLAINTEXT://host.docker.internal:29092,OUTSIDE://host.docker.internal:9092
+      - --pandaproxy-addr 0.0.0.0:8082
+      - --advertise-pandaproxy-addr host.docker.internal:8082
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 8081:8081
+      - 8082:8082
+      - 9092:9092
+      - 9644:9644
+      - 29092:29092
+
+  console:
+    image: docker.redpanda.com/vectorized/console:latest
+    container_name: redpanda.console
+    network_mode: bridge
+    environment:
+      CONFIG_FILEPATH: /etc/console/console.yaml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 18080:8080
+    volumes:
+      - ./console:/etc/console
+    depends_on:
+      - redpanda
+    links:
+      - redpanda
