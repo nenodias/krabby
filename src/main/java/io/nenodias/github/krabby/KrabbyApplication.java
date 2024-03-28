@@ -7,8 +7,8 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 @SpringBootApplication
 public class KrabbyApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(KrabbyApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(KrabbyApplication.class, args);
+    }
 
 }

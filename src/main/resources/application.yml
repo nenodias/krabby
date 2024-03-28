@@ -3,6 +3,15 @@ server:
 
 
 spring:
+  application:
+      name: krabby
+  kafka:
+    consumer:
+      properties:
+        spring.json.trusted.packages: "*"
+    producer:
+      properties:
+        spring.json.add.type.headers: true
   cloud:
     stream:
       function:
@@ -12,16 +21,37 @@ spring:
         messageProducer-out-0:
           destination: "cmd.message_process"
           binder: kafka
+          content-type: application/json
         messageProcessor-in-0:
           destination: "cmd.message_process"
+          group: "krabby-message-processor"
           binder: kafka
+          content-type: application/json
         messageProcessor-out-0:
           destination: "cmd.message"
           binder: kafka
+          content-type: application/json
         messageConsumer-in-0:
           destination: "cmd.message"
+          group: "krabby-message-consumer"
           binder: kafka
+          content-type: application/json
       kafka:
         binder:
           brokers: localhost:9092
           auto-create-topics: true
+          auto-add-partitions: true
+          consumer-properties:
+            key.deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'
+            value.deserializer: 'org.springframework.kafka.support.serializer.JsonDeserializer'
+          producer-properties:
+            key.serializer: 'org.apache.kafka.common.serialization.StringSerializer'
+            value.serializer: 'org.springframework.kafka.support.serializer.JsonSerializer'
+
+      default:
+        producer:
+          useNativeEncoding: true
+        consumer:
+          useNativeDecoding: true
+          configuration:
+            start-offset: 'earliest'
